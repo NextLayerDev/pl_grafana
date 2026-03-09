@@ -3,16 +3,19 @@ version: "3.8"
 services:
 
   loki:
-    image: grafana/loki:3.6.4
+    image: grafana/loki:2.9.4
     command: -config.file=/etc/loki/loki-config.yaml
     volumes:
       - ./loki/loki-config.yaml:/etc/loki/loki-config.yaml
       - loki-data:/loki
     ports:
       - "3100:3100"
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
 
   grafana:
-    image: grafana/grafana:12.4.1
+    image: grafana/grafana:10.4.2
     depends_on:
       - loki
     volumes:
@@ -20,6 +23,13 @@ services:
       - ./grafana/provisioning:/etc/grafana/provisioning
     ports:
       - "3000:3000"
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-lokiexplore-app
 
 volumes:
   grafana-data:
